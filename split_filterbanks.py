@@ -16,7 +16,7 @@ parser.add_argument(
     required = True,
     help="(Full) path name to the input filterbank file (default: %(default)s).")
 parser.add_argument(
-    '-out', '--outdir',
+    '-o', '--outdir',
     type=str,
     required = False,
     help="Optional path name to directory where the output filterbanks will be written to (default: same directory as input directory")
@@ -31,7 +31,7 @@ parser.add_argument(
     type=str,
     help='Comma separated string indicating how many channels the output filterbank files must have (default: %(default)s).')
 parser.add_argument(
-    '-o', '--overlap',
+    '--overlap',
     default='True',
     type=str,
     help="If this is a string True, the script will also create filterbanks which have 50 percent overlap with adjacent filterbanks (default: %(default)s).")
@@ -56,8 +56,10 @@ parser.add_argument(
     type=str,
     help="If this is a string True, your_writer.py will produce a log file (default: %(default)s).")
 
+
 def run_commands(cmds):
     return os.system(cmds)
+
 
 def check_ints(args):
     try:
@@ -71,6 +73,8 @@ def check_ints(args):
 
 
 def check_division(args):
+    """ Checks if the split(s) from the input argument is/are a divisor of the number of input channels
+    exist program is this is not the case """
     splits = [int(x) for x in args.splits.split(",")]
     n = int(args.nchans)
     for ss in splits:
@@ -83,7 +87,13 @@ def check_division(args):
 
 
 def create_chan_nums(n, splits, overlap):
-    chan_tuples = []
+    """ Creates tuples for an input number of channels n, a list of integers to split it by
+    and a boolean to account for overlap.
+    
+    Example: n=128, splits=[64], overlap=True
+    return [(0, 64), (32, 96), (64, 128)]
+    Example: n=64, splits=[16,32], overlap=False
+    return [(0, 16), (16, 32), (32, 48), (48, 64), (0, 32), (32, 64)]"""
 
     if overlap == "True":
         for s in splits:
@@ -97,12 +107,22 @@ def create_chan_nums(n, splits, overlap):
 
     return chan_tuples
 
+
 def create_commands(args, path, infile, chan_splits):
-    """ write docstring """
+    """ Given the input paramaters of the program, write the commands for your_writer.py """
     cmds = []
     for cs in chan_splits:
         l, h = cs[0], cs[1]
-        outname = infile.split(".")[0]
+
+        # if input file has a .fil or .fits extension, remove it from the outname. 
+        if infile[-5:] == ".fits":
+            outname = infile[:-5]
+        elif infile[-4] == ".fil":
+            outname = infile[:-4]
+        else:
+            outname = infile
+
+        # add channel numbers to the outname
         outname += "_c{}_{}".format(l, h)
         if args.log == "True":
             cmd = "your_writer.py -t {} -c {} {} -o {} -name {} -f {}".\
