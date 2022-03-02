@@ -124,6 +124,9 @@ def create_commands(args, outpath, infile, chan_splits):
         else:
             outname = infile
 
+        # remove any potential full path names to the outname, since your_writer uses -o </path/to/dir> anyway
+        outname = outname.split("/")[-1]
+
         # add channel numbers to the outname
         outname += "_c{}_{}".format(l, h)
 
