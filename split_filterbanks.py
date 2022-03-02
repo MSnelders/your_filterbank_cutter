@@ -110,7 +110,7 @@ def create_chan_nums(n, splits, overlap):
     return chan_tuples
 
 
-def create_commands(args, path, infile, chan_splits):
+def create_commands(args, outpath, infile, chan_splits):
     """ Given the input paramaters of the program, write the commands for your_writer.py """
     cmds = []
     for cs in chan_splits:
@@ -119,19 +119,20 @@ def create_commands(args, path, infile, chan_splits):
         # if input file has a .fil or .fits extension, remove it from the outname. 
         if infile[-5:] == ".fits":
             outname = infile[:-5]
-        elif infile[-4] == ".fil":
+        elif infile[-4:] == ".fil":
             outname = infile[:-4]
         else:
             outname = infile
 
         # add channel numbers to the outname
         outname += "_c{}_{}".format(l, h)
+
         if args.log == "True":
             cmd = "your_writer.py -t {} -c {} {} -o {} -name {} -f {}".\
-                format(args.type, l, h, path, outname, infile)
+                format(args.type, l, h, outpath, outname, infile)
         else:
             cmd = "your_writer.py --no_log_file -t {} -c {} {} -o {} -name {} -f {}".\
-                format(args.type, l, h, path, outname, path+infile)
+                format(args.type, l, h, outpath, outname, infile)
         cmds.append(cmd)
 
     return cmds
@@ -149,17 +150,17 @@ def chenk_input(args):
     infile = args.infile
     infile_base = infile.split("/")[-1]
 
-    if outdir:
-        path =  "/".join(outdir.split("/")) 
+    if ((type(outdir) == str) & (len(outdir) >= 2)):
+        outpath =  "/".join(outdir.split("/")) 
     else:
-        path = "/".join(infile.split("/")[:-1]) + "/"
+        outpath = "/".join(infile.split("/")[:-1]) + "/"
 
-    if path == "/":
-        path = "./"
+    if outpath == "/":
+        outpath = "./"
 
     chan_splits = create_chan_nums(n, splits, overlap)
 
-    cmds = create_commands(args, path, infile_base, chan_splits)
+    cmds = create_commands(args, outpath, infile_base, chan_splits)
 
     p = Pool(processes=args.ncpus)
 
