@@ -102,10 +102,8 @@ def create_commands(args, path, infile, chan_splits):
     cmds = []
     for cs in chan_splits:
         l, h = cs[0], cs[1]
-
         outname = infile.split(".")[0]
         outname += "_c{}_{}".format(l, h)
-
         if args.log == "True":
             cmd = "your_writer.py -t {} -c {} {} -o {} -name {} -f {}".\
                 format(args.type, l, h, path, outname, infile)
