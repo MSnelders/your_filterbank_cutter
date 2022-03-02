@@ -95,6 +95,8 @@ def create_chan_nums(n, splits, overlap):
     Example: n=64, splits=[16,32], overlap=False
     return [(0, 16), (16, 32), (32, 48), (48, 64), (0, 32), (32, 64)]"""
 
+    chan_tuples = []
+
     if overlap == "True":
         for s in splits:
             for i in np.arange(0, n - s // 2, s // 2):
