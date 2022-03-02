@@ -13,7 +13,13 @@ parser.add_argument(
     '-i', '--infile',
     default='/home/msnelders/YOURPATHNAMEHERE/infile.fil',
     type=str,
+    required = True,
     help="(Full) path name to the input filterbank file (default: %(default)s).")
+parser.add_argument(
+    '-out', '--outdir',
+    type=str,
+    required = False,
+    help="Optional path name to directory where the output filterbanks will be written to (default: same directory as input directory")
 parser.add_argument(
     '-n', '--nchans',
     default=1536,
@@ -96,8 +102,12 @@ def create_commands(args, path, infile, chan_splits):
     cmds = []
     for cs in chan_splits:
         l, h = cs[0], cs[1]
+
         outname = infile.split(".")[0]
         outname += "_c{}_{}".format(l, h)
+
+        print(path)
+
         if args.log == "True":
             cmd = "your_writer.py -t {} -c {} {} -o {} -name {} -f {}".\
                 format(args.type, l, h, path, outname, infile)
@@ -116,10 +126,16 @@ def chenk_input(args):
     n = args.nchans
     overlap = args.overlap
 
+    outdir = args.outdir
+    
     infile = args.infile
     infile_base = infile.split("/")[-1]
 
-    path = "/".join(infile.split("/")[:-1]) + "/"
+    if outdir:
+        path =  "/".join(outdir.split("/")) 
+    else:
+        path = "/".join(infile.split("/")[:-1]) + "/"
+
     if path == "/":
         path = "./"
 
