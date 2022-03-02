@@ -127,12 +127,12 @@ def create_commands(args, outpath, infile, chan_splits):
         # add channel numbers to the outname
         outname += "_c{}_{}".format(l, h)
 
-        if args.log == "True":
-            cmd = "your_writer.py -t {} -c {} {} -o {} -name {} -f {}".\
+        cmd = "your_writer.py --no_log_file -t {} -c {} {} -o {} -name {} -f {}".\
                 format(args.type, l, h, outpath, outname, infile)
-        else:
-            cmd = "your_writer.py --no_log_file -t {} -c {} {} -o {} -name {} -f {}".\
-                format(args.type, l, h, outpath, outname, infile)
+
+        if not (args.log == "True"):
+            cmd = cmd.replace("your_writer.py ", "your_writer.py --no_log_file ")
+
         cmds.append(cmd)
 
     return cmds
@@ -148,7 +148,6 @@ def chenk_input(args):
     outdir = args.outdir
     
     infile = args.infile
-    infile_base = infile.split("/")[-1]
 
     if ((type(outdir) == str) & (len(outdir) >= 2)):
         outpath =  "/".join(outdir.split("/")) 
@@ -160,7 +159,7 @@ def chenk_input(args):
 
     chan_splits = create_chan_nums(n, splits, overlap)
 
-    cmds = create_commands(args, outpath, infile_base, chan_splits)
+    cmds = create_commands(args, outpath, infile, chan_splits)
 
     p = Pool(processes=args.ncpus)
 
