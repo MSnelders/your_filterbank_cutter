@@ -19,7 +19,8 @@ parser.add_argument(
     '-o', '--outdir',
     type=str,
     required = False,
-    help="Optional path name to directory where the output filterbanks will be written to (default: same directory as input directory")
+    help="Optional path name to directory where the output filterbanks will be written to (default: same directory as input directory",
+    default="./")
 parser.add_argument(
     '-n', '--nchans',
     default=1536,
