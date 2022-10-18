@@ -82,7 +82,7 @@ def check_division(args):
             print("Split value equels number of channels. This is would just duplicate the file. - exiting script.")
             exit()
         if not n % ss == 0:
-            print("{} is not divisible by {} - exiting script".format(n, ss))
+            print(f"{n} is not divisible by {ss} - exiting script")
             exit()
 
 
@@ -109,9 +109,25 @@ def create_chan_nums(n, splits, overlap):
 
     return chan_tuples
 
+def get_max_tup_value(t):
+    """ Assumes a list of tuples in the form:
+    [(0, 16), (16, 32), (32, 48), (48, 64), (0, 32), (32, 64)]
+    i.e. n elements with every element a tuple with (low, high) """
+    return max(max(t))
+
+def get_number_of_digits(v):
+    return len(str(v))
+
 
 def create_commands(args, outpath, infile, chan_splits):
     """ Given the input paramaters of the program, write the commands for your_writer.py """
+    
+    # determine largest value in list of tuples
+    max_tup_value = get_max_tup_value(chan_splits)
+    
+    # determine length of that digit
+    max_len = get_number_of_digits(max_tup_value)
+    
     cmds = []
     for cs in chan_splits:
         l, h = cs[0], cs[1]
@@ -127,11 +143,13 @@ def create_commands(args, outpath, infile, chan_splits):
         # remove any potential full path names to the outname, since your_writer uses -o </path/to/dir> anyway
         outname = outname.split("/")[-1]
 
+    
         # add channel numbers to the outname
-        outname += "_c{}_{}".format(l, h)
+        # pad them with leading zeros
+        # e.g. fill add _c00_64 
+        outname += f"_c{str(l).zfill(max_len)}_{str(h).zfill(max_len)}"
 
-        cmd = "your_writer.py --no_log_file -t {} -c {} {} -o {} -name {} -f {}".\
-                format(args.type, l, h, outpath, outname, infile)
+        cmd = f"your_writer.py --no_log_file -t {args.type} -c {l} {h} -o {outpath} -name {outname} -f {infile}"
 
         if not (args.log == "True"):
             cmd = cmd.replace("your_writer.py ", "your_writer.py --no_log_file ")
@@ -168,7 +186,7 @@ def chenk_input(args):
 
     for c in cmds:
         print(c)
-    print("We are going to run {} commands".format(len(cmds)))
+    print(f"We are going to run {len(cmds)} commands")
 
     if args.run == "True":
         p.map(run_commands, cmds)
