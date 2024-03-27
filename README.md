@@ -1,6 +1,6 @@
 
 
-python split_filterbanks.py --help
+```python split_filterbanks.py --help
 usage: split_filterbanks.py [-h] -i INFILE [-o OUTDIR] [-n NCHANS] [-s SPLITS] [--overlap OVERLAP] [-r RUN] [-t TYPE] [--ncpus NCPUS] [--log LOG]
 
 A script that will split a filterbank multiple smaller files using your_writer (https://github.com/thepetabyteproject/your/). It will cut out the wanted frequency channels. Optional 50 percent
@@ -22,4 +22,5 @@ options:
   -t TYPE, --type TYPE  Output format of the output files (fil or fits, default: fil).
   --ncpus NCPUS         Number of CPUs to use with multiprocessing default: 1).
   --log LOG             If this is a string True, your_writer.py will produce a log file (default: False).
+```
 
