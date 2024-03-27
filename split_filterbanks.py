@@ -161,6 +161,7 @@ def create_commands(args, outpath, infile, chan_splits):
 
 
 def chenk_input(args):
+    """ To do: write docstring """
     check_ints(args)
     check_division(args)
     splits = [int(x) for x in args.splits.split(",")]
